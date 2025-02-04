@@ -1,0 +1,124 @@
+// Boilerplate for Anonymous Counseling Web App
+
+const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const jwt = require('jsonwebtoken');
+const socketIO = require('socket.io');
+const http = require('http');
+const mongoose = require('mongoose');
+
+// Initialize environment variables
+dotenv.config();
+
+// Create Express app
+const app = express();
+const server = http.createServer(app);
+const io = socketIO(server);
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+}).then(() => console.log('Database connected successfully'))
+  .catch((err) => console.error('Database connection error:', err));
+
+// Models
+const UserSchema = new mongoose.Schema({
+    id: String,
+    role: { type: String, enum: ['user', 'admin'], required: true },
+    anonymousId: { type: String, required: true },
+    chats: [String],
+    counselingRequests: [String],
+});
+
+const ChatSchema = new mongoose.Schema({
+    participants: [String],
+    messages: [{
+        sender: String,
+        content: String,
+        timestamp: { type: Date, default: Date.now },
+    }],
+});
+
+const CounselingRequestSchema = new mongoose.Schema({
+    userId: String,
+    topic: String,
+    preferredTime: Date,
+    status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' },
+});
+
+const User = mongoose.model('User', UserSchema);
+const Chat = mongoose.model('Chat', ChatSchema);
+const CounselingRequest = mongoose.model('CounselingRequest', CounselingRequestSchema);
+
+// Authentication Middleware
+const authenticate = (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ message: 'Unauthorized' });
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ message: 'Forbidden' });
+        req.user = user;
+        next();
+    });
+};
+
+// Routes
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    // Logic for verifying user credentials
+    // ...
+
+    const user = { id: "123", role: "user", anonymousId: "anon123" }; // Placeholder
+    const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '1h' });
+    res.json({ token, anonymousId: user.anonymousId });
+});
+
+app.get('/dashboard', authenticate, (req, res) => {
+    if (req.user.role === 'user') {
+        res.json({ message: 'User dashboard data' });
+    } else if (req.user.role === 'admin') {
+        res.json({ message: 'Admin dashboard data' });
+    }
+});
+
+app.post('/counseling-requests', authenticate, async (req, res) => {
+    const { topic, preferredTime } = req.body;
+    const request = new CounselingRequest({
+        userId: req.user.id,
+        topic,
+        preferredTime,
+    });
+    await request.save();
+    res.json({ message: 'Request submitted successfully' });
+});
+
+io.on('connection', (socket) => {
+    console.log('A user connected');
+
+    socket.on('join', (roomId) => {
+        console.log(`User joined room ${roomId}`);
+        socket.join(roomId);
+    });
+
+    socket.on('message', (data) => {
+        console.log('Message received:', data);
+        io.to(data.roomId).emit('message', data);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('User disconnected');
+    });
+});
+
+// Start server
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
+
