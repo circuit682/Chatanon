@@ -1,0 +1,141 @@
+/* Fullscreen Background */
+.login-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #021B3A, #0056b3);
+    position: relative;
+    overflow: hidden;
+    padding: 20px;
+}
+
+/* Glassmorphism Card */
+.login-form {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 30px rgba(0, 123, 255, 0.2);
+    width: 350px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Welcome Text */
+.login-form h1 {
+    color: #fff;
+    font-size: 28px;
+    text-shadow: 0px 0px 10px rgba(30, 144, 255, 0.8);
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+/* Input Fields */
+.login-form input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 16px;
+    outline: none;
+    transition: 0.3s ease;
+}
+
+.login-form input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.login-form input:focus {
+    box-shadow: 0 0 8px rgba(30, 144, 255, 0.8);
+}
+
+/* Password Container (for Eye Icon) */
+.password-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    font-size: 18px;
+    transition: 0.3s ease;
+}
+
+.toggle-password:hover {
+    color: #fff;
+}
+
+/* Forgot Password */
+.forgot-password {
+    text-align: right;
+    margin: 10px 0;
+}
+
+.forgot-password a {
+    text-decoration: none;
+    color: #00c6ff;
+    font-size: 14px;
+    transition: 0.3s ease;
+}
+
+.forgot-password a:hover {
+    text-shadow: 0 0 5px #00c6ff;
+}
+
+/* Login Button */
+.login-form button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(90deg, #007bff, #00c6ff);
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+}
+
+.login-form button:hover {
+    box-shadow: 0 0 15px rgba(0, 123, 255, 0.9);
+}
+
+/* Register Link */
+.register-link {
+    margin-top: 15px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.register-link a {
+    color: #00c6ff;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s ease;
+}
+
+.register-link a:hover {
+    text-shadow: 0 0 5px #00c6ff;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 400px) {
+    .login-form {
+        width: 90%;
+        padding: 30px;
+    }
+}
